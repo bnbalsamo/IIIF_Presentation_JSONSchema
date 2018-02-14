@@ -1,7 +1,7 @@
 {
     "id": "iiifpres_records",
     "title": "IIIF Presentation API 2.1.1 Record Schema",
-    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$schema": "http://json-schema.org/draft-04/schema#",
     "description": "Schema for validating IIIF Presentation API 2.1.1 records",
     "allOf": [
         {
@@ -15,9 +15,10 @@
                         },
                         {
                             "type": "array",
-                            "contains": {
-                                "type": "string",
-                                "pattern":"^http://iiif.io/api/presentation/2/context.json$" 
+                            "not": {
+                                "items": {
+                                    "not": {"pattern": "^http://iiif.io/api/presentation/2/context.json$"}
+                                }
                             }
                         }
                     ]
@@ -26,7 +27,8 @@
         },
         {
             "oneOf": [
-                {"$ref": "#/definitions/collection"}
+                {"$ref": "#/definitions/collection"},
+                {"$ref": "#/definitions/manifest"}
             ]
         }
     ],
@@ -60,8 +62,7 @@
             "required": ["@id"],
             "properties": {
                 "@id": {"$ref": "#/definitions/not_empty_string"}
-            },
-            "additionalProperties": true
+            }
         },
         "uri_representation_array": {
             "type": "array",
@@ -244,10 +245,8 @@
         },
         "collection": {
 	    "type": "object",
-	    "additionalProperties": false,
 	    "required": ["@id", "@type", "label"],
 	    "properties": {
-                "@context": {},
 		"@type": {
                     "allOf": [
                         {"$ref": "#/definitions/@type"},
@@ -255,12 +254,15 @@
                             "oneOf": [
                                 {
                                     "type": "string", 
-                                    "const": "sc:Collection"
+                                    "pattern": "^sc:Collection$"
                                 },
                                 {
                                     "type": "array", 
-                                    "contains": 
-                                    {"const": "sc:Collection"}
+                                    "not": {
+                                        "items": {
+                                            "not": {"pattern": "^sc:Collection$"}
+                                        }
+                                    }
                                 }
                             ]
                         }
@@ -281,7 +283,7 @@
 		"members": {
 		    "type": "array",
 		    "items": {
-                        "anyOf": [
+                        "oneOf": [
                             {"$ref": "#/definitions/collection"},
                             {"$ref": "#/definitions/manifest"}
                         ]
@@ -301,20 +303,18 @@
                 "service": {"$ref": "#/definitions/service"},
                 "seeAlso": {"$ref": "#/definitions/seeAlso"},
                 "within": {"$ref": "#/definitions/within"},
-                "first": {"$ref": "#/definitions/uri_reference_singleton"},
-                "last": {"$ref": "#/definitions/uri_reference_singleton"},
+                "first": {"$ref": "#/definitions/uri_representation_singleton"},
+                "last": {"$ref": "#/definitions/uri_representation_singleton"},
                 "total": {"$ref": "#/definitions/positive_int"},
-                "next": {"$ref": "#/definitions/uri_reference_singleton"},
-                "prev": {"$ref": "#/definitions/uri_reference_singleton"},
+                "next": {"$ref": "#/definitions/uri_representation_singleton"},
+                "prev": {"$ref": "#/definitions/uri_representation_singleton"},
                 "startIndex": {"$ref": "#/definitions/positive_int"} 
             }
         },
         "manifest": {
             "type": "object",
-            "additionalProperties": true,
             "required": ["@id", "@type", "label"],
             "properties": {
-                "@context": {},
                 "@type": {
                     "allOf": [
                         {"$ref": "#/definitions/@type"},
@@ -322,17 +322,189 @@
                             "oneOf": [
                                 {
                                     "type": "string", 
-                                    "const": "sc:Manifest"
+                                    "pattern": "^sc:Manifest$"
                                 },
                                 {
                                     "type": "array", 
-                                    "contains": {"const": "sc:Manifest"}
+                                    "not": {
+                                        "items": {
+                                            "not": {"pattern": "^sc:Manifest$"}
+                                        }
+                                    }
                                 }
                             ]
                         }
                     ]
                 },
-                "label": {"ref": "#/definitions/label"}
+                "label": {"ref": "#/definitions/label"},
+		"metadata": {"$ref": "#/definitions/metadata"},
+		"thumbnail": {"$ref": "#/definitions/thumbnail"},
+		"description": {"$ref": "#/definitions/description"},
+		"license": {"$ref": "#/definitions/license"},
+		"logo": {"$ref": "#/definitions/logo"},
+		"attribution": {"$ref": "#/definitions/attribution"}
+            }
+        },
+        "sequence": {
+            "type": "object",
+            "required": ["@id", "@type", "label"],
+            "properties": {
+                "@type": {
+                    "allOf": [
+                        {"$ref": "#/definitions/@type"},
+                        {
+                            "oneOf": [
+                                {
+                                    "type": "string", 
+                                    "pattern": "^sc:Sequence$"
+                                },
+                                {
+                                    "type": "array", 
+                                    "not": {
+                                        "items": {
+                                            "not": {"pattern": "^sc:Sequence$"}
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "canvas": {
+            "type": "object",
+            "required": ["@id", "@type", "label"],
+            "properties": {
+                "@type": {
+                    "allOf": [
+                        {"$ref": "#/definitions/@type"},
+                        {
+                            "oneOf": [
+                                {
+                                    "type": "string", 
+                                    "pattern": "^sc:Canvas$"
+                                },
+                                {
+                                    "type": "array", 
+                                    "not": {
+                                        "items": {
+                                            "not": {"pattern": "^sc:Canvas$"}
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "annotation": {
+            "type": "object",
+            "required": ["@id", "@type", "label"],
+            "properties": {
+                "@type": {
+                    "allOf": [
+                        {"$ref": "#/definitions/@type"},
+                        {
+                            "oneOf": [
+                                {
+                                    "type": "string", 
+                                    "pattern": "^oa:Annotation$"
+                                },
+                                {
+                                    "type": "array", 
+                                    "not": {
+                                        "items": {
+                                            "not": {"pattern": "^oa:Annotation$"}
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "annotation_list": {
+            "type": "object",
+            "required": ["@id", "@type", "label"],
+            "properties": {
+                "@type": {
+                    "allOf": [
+                        {"$ref": "#/definitions/@type"},
+                        {
+                            "oneOf": [
+                                {
+                                    "type": "string", 
+                                    "pattern": "^sc:AnnotationList$"
+                                },
+                                {
+                                    "type": "array", 
+                                    "not": {
+                                        "items": {
+                                            "not": {"pattern": "^sc:AnnotationList$"}
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "range": {
+            "type": "object",
+            "required": ["@id", "@type", "label"],
+            "properties": {
+                "@type": {
+                    "allOf": [
+                        {"$ref": "#/definitions/@type"},
+                        {
+                            "oneOf": [
+                                {
+                                    "type": "string", 
+                                    "pattern": "^sc:Range$"
+                                },
+                                {
+                                    "type": "array", 
+                                    "not": {
+                                        "items": {
+                                            "not": {"pattern": "^sc:Range$"}
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "layer": {
+            "type": "object",
+            "required": ["@id", "@type", "label"],
+            "properties": {
+                "@type": {
+                    "allOf": [
+                        {"$ref": "#/definitions/@type"},
+                        {
+                            "oneOf": [
+                                {
+                                    "type": "string", 
+                                    "pattern": "^sc:Layer$"
+                                },
+                                {
+                                    "type": "array", 
+                                    "not": {
+                                        "items": {
+                                            "not": {"pattern": "^sc:Layer$"}
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
             }
         }
     }
