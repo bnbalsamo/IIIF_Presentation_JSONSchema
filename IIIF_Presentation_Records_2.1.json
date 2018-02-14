@@ -1,0 +1,339 @@
+{
+    "id": "iiifpres_records",
+    "title": "IIIF Presentation API 2.1.1 Record Schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "description": "Schema for validating IIIF Presentation API 2.1.1 records",
+    "allOf": [
+        {
+            "type": "object",
+            "properties": {
+                "@context": {
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^http://iiif.io/api/presentation/2/context.json$"
+                        },
+                        {
+                            "type": "array",
+                            "contains": {
+                                "type": "string",
+                                "pattern":"^http://iiif.io/api/presentation/2/context.json$" 
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "oneOf": [
+                {"$ref": "#/definitions/collection"}
+            ]
+        }
+    ],
+    "definitions": {
+        "anything_goes": {
+        },
+        "any_string": {
+            "type": "string",
+            "pattern": "^.*$"
+        },
+        "positive_int": {
+            "type": "integer",
+            "minimum": 0
+        },
+        "not_empty_string": {
+            "type": "string",
+            "pattern": "^.+$"
+        },
+        "not_empty_string_array": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/not_empty_string"}
+        },
+        "label": {
+            "oneOf": [
+                {"$ref": "#/definitions/not_empty_string"},
+                {"$ref": "#/definitions/not_empty_string_array"}
+            ]
+        },
+        "uri_representation_singleton": {
+            "type": "object",
+            "required": ["@id"],
+            "properties": {
+                "@id": {"$ref": "#/definitions/not_empty_string"}
+            },
+            "additionalProperties": true
+        },
+        "uri_representation_array": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/uri_representation_singleton"
+            }
+        },
+        "uri_representation": {
+            "oneOf": [
+                {"$ref": "#/definitions/uri_representation_singleton"},
+                {"$ref": "#/definitions/uri_representation_array"}
+            ]
+        },
+        "language_map_singleton": {
+            "type": "object",
+            "properties": {
+                "@id": {"$ref": "#/definitions/not_empty_string"},
+                "@language": {"$ref": "#/definitions/not_empty_string"}
+            }
+        },
+        "language_map_array": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/language_map_singleton"
+            }
+        },
+        "language_map": {
+            "oneOf": [
+                {"$ref": "language_map_singleton"},
+                {"$ref": "language_map_array"}
+            ]
+        },
+        "label_singleton": {
+            "oneOf": [
+                {"$ref": "#/definitions/not_empty_string"},
+                {"$ref": "#/definitions/language_map_singleton"}
+            ]
+        },
+        "label_array": {
+            "oneOf": [
+                {"$ref": "#/definitions/not_empty_string_array"},
+                {"$ref": "#/definitions/language_map_array"}
+            ]
+        },
+        "label": {
+            "oneOf": [
+                {"$ref": "#/definitions/label_singleton"},
+                {"$ref": "#/definitions/label_array"}
+            ]
+        },
+        "metadata_singleton": {
+            "type": "object",
+            "required": ["label", "value"],
+            "properties": {
+                "label": {},
+                "value": {}
+            }
+        },
+        "metadata_array": {
+            "type": "array",
+            "items": {"$ref": "#/definitions/metadata_singleton"}
+        },
+        "metadata": {
+            "oneOf": [
+                {"$ref": "#/definitions/metadata_singleton"},
+                {"$ref": "#/definitions/metadata_array"}
+            ]
+        },
+        "description_singleton": {
+            "oneOf": [
+                {"$ref": "#/definitions/not_empty_string"},
+                {"$ref": "#/definitions/language_map_singleton"}
+            ]
+        },
+        "description_array": {
+            "oneOf": [
+                {"$ref": "#/definitions/not_empty_string_array"},
+                {"$ref": "#/definitions/language_map_array"}
+            ]
+        },
+        "description": {
+            "oneOf": [
+                {"$ref": "#/definitions/description_array"},
+                {"$ref": "#/definitions/description_singleton"}
+            ]
+        },
+        "thumbnail": {
+            "oneOf": [
+                {"$ref": "#/definitions/uri_representation"},
+                {
+                    "oneOf": [
+                        {"$ref": "#/definitions/not_empty_string"},
+                        {"$ref": "#/definitions/not_empty_string_array"}
+                    ]
+                }
+            ]
+        },
+        "attribution_singleton": {
+            "oneOf": [
+                {"$ref": "#/definitions/not_empty_string"},
+                {"$ref": "#/definitions/language_map_singleton"}
+            ]
+        },
+        "attribution_array": {
+            "oneOf": [
+                {"$ref": "#/definitions/not_empty_string_array"},
+                {"$ref": "#/definitions/language_map_array"}
+            ]
+        },
+        "attribution": {
+            "oneOf": [
+                {"$ref": "#/definitions/attribution_singleton"},
+                {"$ref": "#/definitions/attribution_array"}
+            ]
+        },
+        "logo": {
+            "oneOf": [
+                {"$ref": "#/definitions/uri_representation"},
+                {
+                    "oneOf": [
+                        {"$ref": "#/definitions/not_empty_string"},
+                        {"$ref": "#/definitions/not_empty_string_array"}
+                    ]
+                }
+            ]
+        },
+        "@type": {
+            "oneOf": [
+                {"$ref": "#/definitions/not_empty_string"},
+                {"$ref": "#/definitions/not_empty_string_array"}
+            ]
+        },
+        "viewingHint": {
+            "oneOf": [
+                {"$ref": "#/definitions/not_empty_string"},
+                {"$ref": "#/definitions/not_empty_string_array"}
+            ]
+        },
+        "related": {
+            "$ref": "#/definitions/uri_representation"
+        },
+        "rendering_singleton": {
+            "allOf": [
+                {"$ref": "#/definitions/uri_representation_singleton"},
+                {"type": "object", "required": ["format", "label"]}
+            ]
+        },
+        "rendering_array": {
+            "allOf": [
+                {"$ref": "#/definitions/uri_representation_array"},
+                {"items": {"$ref": "#/definitions/rendering_singleton"}}
+            ]
+        },
+        "rendering": {
+            "oneOf": [
+                {"$ref": "#/definitions/rendering_singleton"},
+                {"$ref": "#/definitions/rendering_array"}
+            ]
+        },
+        "service": {
+            "$ref": "#/definitions/uri_representation"
+        },
+        "seeAlso": {
+            "$ref": "#/definitions/uri_representation"
+        },
+        "within": {
+            "oneOf": [
+                {"$ref": "#/definitions/uri_representation"},
+                {"$ref": "#/definitions/not_empty_string"},
+                {"$ref": "#/definitions/not_empty_string_array"}
+            ]
+        },
+        "license": {
+            "oneOf": [
+                {"$ref": "#/definitions/not_empty_string"},
+                {"$ref": "#/definitions/not_empty_string_array"}
+            ]
+        },
+        "navDate": {
+        },
+        "collection": {
+	    "type": "object",
+	    "additionalProperties": false,
+	    "required": ["@id", "@type", "label"],
+	    "properties": {
+                "@context": {},
+		"@type": {
+                    "allOf": [
+                        {"$ref": "#/definitions/@type"},
+                        {
+                            "oneOf": [
+                                {
+                                    "type": "string", 
+                                    "const": "sc:Collection"
+                                },
+                                {
+                                    "type": "array", 
+                                    "contains": 
+                                    {"const": "sc:Collection"}
+                                }
+                            ]
+                        }
+                    ]
+                },
+		"collections": {
+		    "type": "array",
+		    "items": {
+                        "$ref": "#/definitions/collection"
+                    }
+		},
+		"manifests": {
+		    "type": "array",
+		    "items": {
+                        "$ref": "#/definitions/manifest"
+                    }
+		},
+		"members": {
+		    "type": "array",
+		    "items": {
+                        "anyOf": [
+                            {"$ref": "#/definitions/collection"},
+                            {"$ref": "#/definitions/manifest"}
+                        ]
+                    }
+		},
+		"@id": {"$ref": "#/definitions/not_empty_string"},
+		"viewingHint": {"$ref": "#/definitions/viewingHint"},
+		"navDate": {"$ref": "#/definitions/navDate"},
+		"label": {"$ref": "#/definitions/label"},
+		"description": {"$ref": "#/definitions/description"},
+		"attribution": {"$ref": "#/definitions/attribution"},
+		"metadata": {"$ref": "#/definitions/metadata"},
+		"thumbnail": {"$ref": "#/definitions/thumbnail"},
+		"license": {"$ref": "#/definitions/license"},
+		"logo": {"$ref": "#/definitions/logo"},
+                "rendering": {"$ref": "#/definitions/rendering"},
+                "service": {"$ref": "#/definitions/service"},
+                "seeAlso": {"$ref": "#/definitions/seeAlso"},
+                "within": {"$ref": "#/definitions/within"},
+                "first": {"$ref": "#/definitions/uri_reference_singleton"},
+                "last": {"$ref": "#/definitions/uri_reference_singleton"},
+                "total": {"$ref": "#/definitions/positive_int"},
+                "next": {"$ref": "#/definitions/uri_reference_singleton"},
+                "prev": {"$ref": "#/definitions/uri_reference_singleton"},
+                "startIndex": {"$ref": "#/definitions/positive_int"} 
+            }
+        },
+        "manifest": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["@id", "@type", "label"],
+            "properties": {
+                "@context": {},
+                "@type": {
+                    "allOf": [
+                        {"$ref": "#/definitions/@type"},
+                        {
+                            "oneOf": [
+                                {
+                                    "type": "string", 
+                                    "const": "sc:Manifest"
+                                },
+                                {
+                                    "type": "array", 
+                                    "contains": {"const": "sc:Manifest"}
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "label": {"ref": "#/definitions/label"}
+            }
+        }
+    }
+}
